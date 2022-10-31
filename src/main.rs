@@ -6,6 +6,12 @@ fn main() -> io::Result<()> {
     let args = std::env::args().collect::<Vec<_>>();
     let ref_args = args.iter().map(|s| s.as_str()).collect::<Vec<_>>();
     match ref_args[..] {
+        ["--help"] | ["-h"] => {
+            println!("Usage: ruffle [FILE]");
+            println!("Write a random permutation of the input lines to standard output.");
+            println!("With no FILE, or when FILE is -, read standard input.");
+            Ok(())
+        }
         [_] | [_, "-"] => {
             let mut buf = Vec::new();
             // read from stdin
@@ -19,6 +25,7 @@ fn main() -> io::Result<()> {
         }
         _ => {
             eprintln!("ruffle: extra operand '{}'", ref_args[2]);
+            eprintln!("Try 'ruffle --help' for more information.");
             std::process::exit(1);
         }
     }
