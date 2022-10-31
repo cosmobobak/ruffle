@@ -26,6 +26,7 @@ fn main() -> io::Result<()> {
 
 fn driver(bytes: &[u8]) -> Result<(), io::Error> {
     let output = std::io::stdout();
+    let bytes = trim_ascii_whitespace(bytes);
     let mut lines = bytes.split(|&c| c == b'\n').collect::<Vec<_>>();
     lines.shuffle(&mut rand::thread_rng());
     let mut output = std::io::BufWriter::new(output.lock());
@@ -34,4 +35,23 @@ fn driver(bytes: &[u8]) -> Result<(), io::Error> {
         output.write_all(b"\n")?;
     }
     Ok(())
+}
+
+fn trim_ascii_whitespace(bytes: &[u8]) -> &[u8] {
+    let mut bytes = bytes;
+    while let [first, rest @ ..] = bytes {
+        if first.is_ascii_whitespace() {
+            bytes = rest;
+        } else {
+            break;
+        }
+    }
+    while let [rest @ .., last] = bytes {
+        if last.is_ascii_whitespace() {
+            bytes = rest;
+        } else {
+            break;
+        }
+    }
+    bytes
 }
